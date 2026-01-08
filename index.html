@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sum & Product Challenge</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --accent-blue: #4dabf7;
+            --accent-dark-blue: #1864ab;
+            --accent-yellow: #fcc419;
+            --accent-orange: #ff922b;
+            --text-color: #333;
+            --success: #40c057;
+            --error: #fa5252;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            min-height: 100dvh;
+            touch-action: manipulation;
+            overscroll-behavior: none;
+        }
+
+        /* --- Header & Top Bar --- */
+        header {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-dark-blue);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1 { margin: 0; font-size: 1.2rem; }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .timer-box {
+            background: rgba(0,0,0,0.2);
+            padding: 5px 15px;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .score-box {
+            color: var(--accent-yellow);
+        }
+
+        /* --- Main Game Area --- */
+        .game-container {
+            max-width: 800px;
+            width: 95%;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* The 4 Number Slots */
+        .slots-wrapper {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            background: #e9ecef;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #dee2e6;
+        }
+
+        .slot-group-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .group-header {
+            font-weight: bold;
+            color: var(--accent-dark-blue);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .slot-group {
+            display: flex;
+            gap: 15px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            width: 80px;
+            height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            border: 3px solid transparent;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .card label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #868e96;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .card input {
+            width: 100%;
+            border: none;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-color);
+            background: transparent;
+            outline: none;
+            pointer-events: none; /* Controlled by keypad */
+        }
+
+        /* Active input state */
+        .card.active {
+            border-color: var(--accent-blue);
+            background-color: #e7f5ff;
+            transform: translateY(-2px);
+        }
+
+        .card.locked {
+            background-color: #f1f3f5;
+            color: #495057;
+        }
+
+
+        /* --- Controls & Keypad --- */
+        .controls-area {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .level-select {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .level-btn {
+            background: white;
+            border: 2px solid var(--accent-blue);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            color: var(--accent-dark-blue);
+            transition: 0.2s;
+        }
+
+        .level-btn:hover { background: #e7f5ff; }
+        .level-btn.selected {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .key {
+            width: 60px;
+            height: 60px;
+            background: var(--accent-yellow);
+            border: none;
+            border-radius: 8px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #e67700;
+            color: #333;
+            transition: transform 0.1s;
+        }
+
+        .key:active {
+            transform: translateY(4px);
+            box-shadow: 0 0 0 #e67700;
+        }
+
+        .key.action { background: var(--accent-blue); box-shadow: 0 4px 0 var(--accent-dark-blue); color: white; }
+        .key.delete { background: var(--error); box-shadow: 0 4px 0 #c92a2a; color: white; }
+        .key.submit { background: var(--success); box-shadow: 0 4px 0 #2b8a3e; color: white; font-size: 1rem; }
+        
+        .bottom-actions {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .action-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .btn-skip { background: #adb5bd; color: white; }
+        .btn-reset { background: var(--accent-orange); color: white; }
+
+        /* --- Modals & Overlays --- */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            text-align: center;
+        }
+
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+
+        .review-table th, .review-table td {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            text-align: center;
+        }
+
+        .review-table th { background: #f8f9fa; }
+        
+        .correct { color: var(--success); font-weight: bold; }
+        .wrong { color: var(--error); text-decoration: line-through; }
+        .missed { color: #868e96; font-style: italic; }
+
+        /* ==================== MOBILE STYLES ==================== */
+        
+        /* Portrait mode on phones */
+        @media (max-width: 480px) {
+            body {
+                min-height: 100dvh;
+                overflow-x: hidden;
+            }
+            
+            header {
+                padding: 8px 12px;
+                box-sizing: border-box;
+            }
+            
+            h1 { font-size: 1rem; }
+            
+            .status-bar {
+                gap: 10px;
+                font-size: 1rem;
+            }
+            
+            .timer-box {
+                padding: 4px 10px;
+                min-width: 60px;
+            }
+            
+            .game-container {
+                margin-top: 8px;
+                gap: 10px;
+                padding: 0 5px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+            
+            /* Level buttons - compact grid */
+            .level-select {
+                gap: 4px;
+                padding: 0 5px;
+            }
+            
+            .level-btn {
+                font-size: 0.65rem;
+                padding: 5px 6px;
+                border-width: 1.5px;
+            }
+            
+            /* Cards - smaller but readable */
+            .slots-wrapper {
+                padding: 10px;
+                gap: 15px;
+                border-radius: 10px;
+            }
+            
+            .slot-group-container {
+                gap: 5px;
+            }
+            
+            .group-header {
+                font-size: 0.7rem;
+            }
+            
+            .slot-group {
+                gap: 8px;
+            }
+            
+            .card {
+                width: 60px;
+                height: 70px;
+                border-radius: 8px;
+                border-width: 2px;
+            }
+            
+            .card label {
+                font-size: 0.55rem;
+                margin-bottom: 2px;
+            }
+            
+            .card input {
+                font-size: 1.3rem;
+            }
+            
+            .msg {
+                height: 16px;
+                font-size: 0.85rem;
+                margin-top: 2px;
+            }
+            
+            /* Keypad - LARGER for touch */
+            .controls-area {
+                gap: 6px;
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .keypad {
+                gap: 6px;
+            }
+            
+            .key {
+                width: 70px;
+                height: 55px;
+                font-size: 1.4rem;
+                border-radius: 6px;
+                box-shadow: 0 3px 0 #e67700;
+            }
+            
+            .key.action { box-shadow: 0 3px 0 var(--accent-dark-blue); }
+            .key.delete { box-shadow: 0 3px 0 #c92a2a; }
+            .key.submit { 
+                box-shadow: 0 3px 0 #2b8a3e; 
+                font-size: 0.85rem;
+                width: 70px !important;
+            }
+            
+            .bottom-actions {
+                gap: 10px;
+                margin-top: 5px;
+                padding-bottom: 10px;
+            }
+            
+            .action-btn {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Landscape mode on phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                min-height: 100dvh;
+            }
+            
+            header {
+                padding: 5px 15px;
+                position: sticky;
+                top: 0;
+                z-index: 50;
+            }
+            
+            h1 { font-size: 0.9rem; }
+            
+            .status-bar {
+                font-size: 0.9rem;
+                gap: 15px;
+            }
+            
+            .timer-box {
+                padding: 3px 10px;
+                min-width: 50px;
+            }
+            
+            .game-container {
+                margin-top: 5px;
+                gap: 8px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: flex-start;
+                max-width: 100%;
+                padding: 0 10px;
+            }
+            
+            /* Hide level selector in landscape to save space */
+            .level-select {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+            
+            /* Cards row */
+            .slots-wrapper {
+                padding: 8px 15px;
+                gap: 20px;
+                order: 1;
+                flex: 0 0 auto;
+            }
+            
+            .slot-group-container {
+                gap: 4px;
+            }
+            
+            .group-header {
+                font-size: 0.65rem;
+            }
+            
+            .slot-group {
+                gap: 8px;
+            }
+            
+            .card {
+                width: 55px;
+                height: 60px;
+            }
+            
+            .card label {
+                font-size: 0.5rem;
+            }
+            
+            .card input {
+                font-size: 1.2rem;
+            }
+            
+            .msg {
+                order: 2;
+                height: 14px;
+                font-size: 0.75rem;
+                flex: 0 0 100%;
+                text-align: center;
+            }
+            
+            /* Keypad - side by side layout */
+            .controls-area {
+                order: 3;
+                gap: 8px;
+            }
+            
+            .keypad {
+                gap: 4px;
+            }
+            
+            .key {
+                width: 50px;
+                height: 40px;
+                font-size: 1.1rem;
+                box-shadow: 0 2px 0 #e67700;
+            }
+            
+            .key.action { box-shadow: 0 2px 0 var(--accent-dark-blue); }
+            .key.delete { box-shadow: 0 2px 0 #c92a2a; }
+            .key.submit { 
+                box-shadow: 0 2px 0 #2b8a3e;
+                font-size: 0.7rem;
+                width: 50px !important;
+            }
+            
+            .bottom-actions {
+                order: 4;
+                gap: 8px;
+                margin-top: 0;
+                flex: 0 0 auto;
+            }
+            
+            .action-btn {
+                padding: 8px 12px;
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Tablet portrait */
+        @media (min-width: 481px) and (max-width: 768px) {
+            .game-container {
+                gap: 15px;
+            }
+            
+            .level-btn {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            
+            .key {
+                width: 65px;
+                height: 65px;
+                font-size: 1.6rem;
+            }
+            
+            .key.submit {
+                width: 85px !important;
+            }
+        }
+        
+        /* Prevent zoom on input focus (iOS) */
+        @media (max-width: 768px) {
+            input, select, textarea, button {
+                font-size: 16px;
+            }
+            
+            /* Touch feedback */
+            .key:active, .level-btn:active, .action-btn:active, .card:active {
+                transform: scale(0.95);
+            }
+            
+            .card.active:active {
+                transform: translateY(-2px) scale(0.98);
+            }
+        }
+
+        .msg {
+            height: 20px;
+            color: var(--error);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <span style="font-size: 0.8rem; opacity: 0.8;">LEVEL <span id="currentLevelDisplay">1</span></span>
+        <h1>Math Dash</h1>
+    </div>
+    <div class="status-bar">
+        <div class="timer-box" id="timer">00:00</div>
+        <div class="score-box">✓ <span id="score">0</span></div>
+    </div>
+</header>
+
+<div class="game-container">
+    
+    <div class="level-select" id="levelSelector">
+        <button class="level-btn selected" onclick="game.setLevel(1)">Level 1 (Integers ±10)</button>
+        <button class="level-btn" onclick="game.setLevel(2)">Level 2 (Integers ±15)</button>
+        <button class="level-btn" onclick="game.setLevel(3)">Level 3 (Sum/Prod ±10)</button>
+        <button class="level-btn" onclick="game.setLevel(4)">Level 4 (Sum/Prod Fast)</button>
+        <button class="level-btn" onclick="game.setLevel(5)">Level 5 (Random ±10)</button>
+        <button class="level-btn" onclick="game.setLevel(6)">Level 6 (Random ±15)</button>
+    </div>
+
+    <div class="slots-wrapper">
+        <div class="slot-group-container">
+            <div class="group-header">Integers</div>
+            <div class="slot-group">
+                <div class="card" id="card-i1" onclick="game.setActiveInput('i1')">
+                    <label>Int 1</label>
+                    <input type="text" id="input-i1" readonly>
+                </div>
+                <div class="card" id="card-i2" onclick="game.setActiveInput('i2')">
+                    <label>Int 2</label>
+                    <input type="text" id="input-i2" readonly>
+                </div>
+            </div>
+        </div>
+
+        <div class="slot-group-container">
+            <div class="group-header">Results</div>
+            <div class="slot-group">
+                <div class="card" id="card-sum" onclick="game.setActiveInput('sum')">
+                    <label>Sum</label>
+                    <input type="text" id="input-sum" readonly>
+                </div>
+                <div class="card" id="card-prod" onclick="game.setActiveInput('prod')">
+                    <label>Prod</label>
+                    <input type="text" id="input-prod" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="msg" id="messageBox"></div>
+
+    <div class="controls-area">
+        <div class="keypad">
+            <button class="key" onclick="game.typeNum(7)">7</button>
+            <button class="key" onclick="game.typeNum(8)">8</button>
+            <button class="key" onclick="game.typeNum(9)">9</button>
+            <button class="key" onclick="game.typeNum(4)">4</button>
+            <button class="key" onclick="game.typeNum(5)">5</button>
+            <button class="key" onclick="game.typeNum(6)">6</button>
+            <button class="key" onclick="game.typeNum(1)">1</button>
+            <button class="key" onclick="game.typeNum(2)">2</button>
+            <button class="key" onclick="game.typeNum(3)">3</button>
+            <button class="key action" onclick="game.typeNum('-')">-</button>
+            <button class="key" onclick="game.typeNum(0)">0</button>
+            <button class="key delete" onclick="game.backspace()">⌫</button>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <button class="key submit" style="height: 100%; width: 80px;" onclick="game.checkAnswer()">ENTER</button>
+        </div>
+    </div>
+
+    <div class="bottom-actions">
+        <button class="action-btn btn-reset" onclick="game.resetGame()">Reset / New</button>
+        <button class="action-btn btn-skip" onclick="game.skipProblem()">Skip >></button>
+    </div>
+
+</div>
+
+<div class="overlay" id="endModal">
+    <div class="modal">
+        <h2 style="color: var(--accent-dark-blue);">Time's Up!</h2>
+        <h3>Score: <span id="finalScore">0</span></h3>
+        <p>Here is how you did:</p>
+        
+        <table class="review-table">
+            <thead>
+                <tr>
+                    <th>Problem</th>
+                    <th>You Typed</th>
+                    <th>Correct</th>
+                </tr>
+            </thead>
+            <tbody id="reviewBody">
+                </tbody>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <button class="action-btn btn-reset" onclick="game.resetGame()">Play Again</button>
+        </div>
+    </div>
+</div>
+
+<script>
+class MathGame {
+    constructor() {
+        this.level = 1;
+        this.score = 0;
+        this.isPlaying = false;
+        this.timerInterval = null;
+        this.currentProblem = {};
+        this.activeFieldId = null;
+        this.history = []; // Stores rounds for review
+        
+        // Configuration from Sticky Notes
+        this.levelConfig = {
+            1: { time: 300, range: 10, mode: 'find_results', excludeZero: true }, // 5 mins
+            2: { time: 300, range: 15, mode: 'find_results', excludeZero: true }, // 5 mins
+            3: { time: 120, range: 10, mode: 'find_integers', excludeZero: false }, // 2 mins
+            4: { time: 60, range: 10, mode: 'find_integers', excludeZero: false },  // 1 min
+            5: { time: 60, range: 10, mode: 'random', excludeZero: false },         // 1 min
+            6: { time: 30, range: 15, mode: 'random', excludeZero: false }          // 30 sec
+        };
+
+        this.init();
+    }
+
+    init() {
+        this.setLevel(1);
+    }
+
+    setLevel(lvl) {
+        this.level = lvl;
+        document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+            btn.classList.toggle('selected', idx + 1 === lvl);
+        });
+        document.getElementById('currentLevelDisplay').innerText = lvl;
+        
+        // Reset game state on level change
+        this.resetGame();
+    }
+
+    resetGame() {
+        clearInterval(this.timerInterval);
+        this.score = 0;
+        this.history = [];
+        this.isPlaying = true;
+        this.timeLeft = this.levelConfig[this.level].time;
+        
+        document.getElementById('score').innerText = '0';
+        document.getElementById('endModal').style.display = 'none';
+        document.getElementById('messageBox').innerText = '';
+        
+        this.startTimer();
+        this.generateProblem();
+    }
+
+    startTimer() {
+        this.updateTimerDisplay();
+        this.timerInterval = setInterval(() => {
+            this.timeLeft--;
+            this.updateTimerDisplay();
+            if (this.timeLeft <= 0) {
+                this.endGame();
+            }
+        }, 1000);
+    }
+
+    updateTimerDisplay() {
+        const m = Math.floor(this.timeLeft / 60);
+        const s = this.timeLeft % 60;
+        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+    }
+
+    generateProblem() {
+        const config = this.levelConfig[this.level];
+        let i1, i2;
+
+        // Generate Integers
+        do {
+            i1 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
+        } while (config.excludeZero && i1 === 0);
+
+        do {
+            i2 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
+        } while (config.excludeZero && i2 === 0);
+
+        const sum = i1 + i2;
+        const prod = i1 * i2;
+
+        this.currentProblem = { i1, i2, sum, prod };
+
+        // Determine what to hide based on mode
+        let toHide = [];
+        
+        if (config.mode === 'find_results') {
+            toHide = ['sum', 'prod'];
+        } else if (config.mode === 'find_integers') {
+            toHide = ['i1', 'i2'];
+        } else if (config.mode === 'random') {
+            const options = ['i1', 'i2', 'sum', 'prod'];
+            // Shuffle and pick 2
+            const shuffled = options.sort(() => 0.5 - Math.random());
+            toHide = [shuffled[0], shuffled[1]];
+        }
+
+        this.currentProblem.hiddenFields = toHide;
+        this.renderBoard();
+    }
+
+    renderBoard() {
+        const fields = ['i1', 'i2', 'sum', 'prod'];
+        let firstHidden = null;
+
+        fields.forEach(field => {
+            const input = document.getElementById(`input-${field}`);
+            const card = document.getElementById(`card-${field}`);
+            
+            input.value = '';
+            card.classList.remove('active', 'locked');
+
+            if (this.currentProblem.hiddenFields.includes(field)) {
+                // This is a field user needs to guess
+                if (!firstHidden) firstHidden = field;
+            } else {
+                // This is a given value
+                input.value = this.currentProblem[field];
+                card.classList.add('locked');
+            }
+        });
+
+        if (firstHidden) {
+            this.setActiveInput(firstHidden);
+        }
+    }
+
+    setActiveInput(fieldId) {
+        if (!this.isPlaying) return;
+        
+        // Cannot select locked fields
+        if (!this.currentProblem.hiddenFields.includes(fieldId)) return;
+
+        // Remove active class from others
+        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+        
+        this.activeFieldId = fieldId;
+        document.getElementById(`card-${fieldId}`).classList.add('active');
+    }
+
+    typeNum(val) {
+        if (!this.activeFieldId || !this.isPlaying) return;
+        const input = document.getElementById(`input-${this.activeFieldId}`);
+        
+        if (val === '-' && input.value.includes('-')) return; // Only one minus
+        if (val === '-' && input.value.length > 0) return; // Minus must be first
+        if (input.value.length > 4) return; // Max length
+
+        input.value += val;
+    }
+
+    backspace() {
+        if (!this.activeFieldId || !this.isPlaying) return;
+        const input = document.getElementById(`input-${this.activeFieldId}`);
+        input.value = input.value.slice(0, -1);
+    }
+
+    checkAnswer() {
+        if (!this.isPlaying) return;
+
+        const hidden = this.currentProblem.hiddenFields;
+        const userValues = {};
+        let isCorrect = true;
+
+        // Gather user inputs
+        hidden.forEach(field => {
+            const val = document.getElementById(`input-${field}`).value;
+            userValues[field] = val === '' || val === '-' ? null : parseInt(val);
+        });
+
+        // Validation Logic
+        // Special logic for "Find Integers" (Order doesn't matter)
+        const config = this.levelConfig[this.level];
+        
+        if (hidden.includes('i1') && hidden.includes('i2') && !hidden.includes('sum')) {
+            // User is finding both integers (Factoring)
+            // Check if user inputs match i1 AND i2 in any order
+            const u1 = userValues['i1'];
+            const u2 = userValues['i2'];
+            const a1 = this.currentProblem.i1;
+            const a2 = this.currentProblem.i2;
+
+            if (u1 === null || u2 === null) isCorrect = false;
+            else {
+                const matchDirect = (u1 === a1 && u2 === a2);
+                const matchSwap = (u1 === a2 && u2 === a1);
+                if (!matchDirect && !matchSwap) isCorrect = false;
+            }
+        } else {
+            // Standard check for other modes
+            hidden.forEach(field => {
+                if (userValues[field] !== this.currentProblem[field]) {
+                    isCorrect = false;
+                }
+            });
+        }
+
+        if (isCorrect) {
+            this.score++;
+            document.getElementById('score').innerText = this.score;
+            document.getElementById('messageBox').innerText = "Correct!";
+            document.getElementById('messageBox').style.color = "var(--success)";
+            
+            this.saveHistory(userValues, true);
+            setTimeout(() => {
+                document.getElementById('messageBox').innerText = "";
+                this.generateProblem();
+            }, 500);
+        } else {
+            document.getElementById('messageBox').innerText = "Try Again!";
+            document.getElementById('messageBox').style.color = "var(--error)";
+            // Shake animation logic could go here
+        }
+    }
+
+    skipProblem() {
+        if (!this.isPlaying) return;
+        
+        // Gather what they had typed so far for the review
+        const hidden = this.currentProblem.hiddenFields;
+        const userValues = {};
+        hidden.forEach(field => {
+            const val = document.getElementById(`input-${field}`).value;
+            userValues[field] = val;
+        });
+
+        this.saveHistory(userValues, false);
+        this.generateProblem();
+        document.getElementById('messageBox').innerText = "Skipped";
+        document.getElementById('messageBox').style.color = "#868e96";
+    }
+
+    saveHistory(userInputs, wasCorrect) {
+        this.history.push({
+            problem: {...this.currentProblem},
+            userInputs: userInputs,
+            wasCorrect: wasCorrect
+        });
+    }
+
+    endGame() {
+        this.isPlaying = false;
+        clearInterval(this.timerInterval);
+        
+        document.getElementById('endModal').style.display = 'flex';
+        document.getElementById('finalScore').innerText = this.score;
+
+        const tbody = document.getElementById('reviewBody');
+        tbody.innerHTML = '';
+
+        this.history.forEach(round => {
+            const row = document.createElement('tr');
+            
+            // Format what the problem was (showing givens)
+            const givens = ['i1', 'i2', 'sum', 'prod']
+                .filter(f => !round.problem.hiddenFields.includes(f))
+                .map(f => `${f.toUpperCase()}:${round.problem[f]}`)
+                .join(', ');
+
+            // Format User Answers vs Correct
+            let userAnswerStr = '';
+            let correctStr = '';
+
+            round.problem.hiddenFields.forEach(f => {
+                let uVal = round.userInputs[f];
+                if (uVal === '' || uVal === null) uVal = '-';
+                
+                const cVal = round.problem[f];
+                
+                userAnswerStr += `<div>${f}: ${uVal}</div>`;
+                correctStr += `<div>${f}: ${cVal}</div>`;
+            });
+
+            const statusClass = round.wasCorrect ? 'correct' : 'wrong';
+
+            row.innerHTML = `
+                <td style="font-size:0.8em; color:#555;">${givens}</td>
+                <td class="${statusClass}">${userAnswerStr}</td>
+                <td class="correct">${correctStr}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+}
+
+// Start the game instance
+window.game = new MathGame();
+
+// Keyboard support
+document.addEventListener('keydown', (e) => {
+    // Ensure game instance exists and is playing
+    if (!window.game || !window.game.isPlaying) return;
+    
+    const game = window.game;
+    
+    // Numbers
+    if (e.key >= '0' && e.key <= '9') {
+        game.typeNum(e.key);
+        return;
+    }
+    
+    // Numpad support might be needed if not handled by standard 0-9 check (usually is, but good to be safe)
+    
+    // Operators/Actions
+    if (e.key === '-' || e.key === '_') {
+        game.typeNum('-');
+        return;
+    }
+    if (e.key === 'Backspace' || e.key === 'Delete') {
+        game.backspace();
+        return;
+    }
+    if (e.key === 'Enter' || e.key === '=') {
+        e.preventDefault(); // Prevent form submission if any
+        game.checkAnswer();
+        return;
+    }
+    
+    // Navigation
+    if (e.key === 'Tab' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        const hidden = game.currentProblem.hiddenFields;
+        if (!hidden || hidden.length === 0) return;
+        
+        let currentIdx = hidden.indexOf(game.activeFieldId);
+        if (currentIdx === -1) currentIdx = -1;
+        
+        const nextIdx = (currentIdx + 1) % hidden.length;
+        game.setActiveInput(hidden[nextIdx]);
+    }
+    
+    if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const hidden = game.currentProblem.hiddenFields;
+        if (!hidden || hidden.length === 0) return;
+        
+        let currentIdx = hidden.indexOf(game.activeFieldId);
+        if (currentIdx === -1) currentIdx = hidden.length;
+        
+        const prevIdx = (currentIdx - 1 + hidden.length) % hidden.length;
+        game.setActiveInput(hidden[prevIdx]);
+    }
+});
+
+</script>
+
+</body>
+</html>
+
