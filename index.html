@@ -1,20 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sum & Product Challenge</title>
+    <title>Play | Panhandle Math League</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
-            --bg-color: #f0f4f8;
+            --bg-color: #faf8f5;
             --card-bg: #ffffff;
-            --accent-blue: #4dabf7;
-            --accent-dark-blue: #1864ab;
-            --accent-yellow: #fcc419;
-            --accent-orange: #ff922b;
-            --text-color: #333;
-            --success: #40c057;
-            --error: #fa5252;
+            --midnight: #0a1628;
+            --deep-blue: #1a2744;
+            --gold: #f7b32b;
+            --gold-light: #ffd06a;
+            --gold-dark: #c48a1a;
+            --rust: #c45c26;
+            --sky: #4a9eff;
+            --success: #22c55e;
+            --error: #ef4444;
+            --text-primary: #0a1628;
+            --text-secondary: #5a6a7a;
+            --slot-bg: #f1f5f9;
+            --slot-border: #e2e8f0;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0a1628;
+            --card-bg: #1a2744;
+            --text-primary: #faf8f5;
+            --text-secondary: #94a3b8;
+            --slot-bg: #1e3a5f;
+            --slot-border: #2d4a6f;
         }
 
         * {
@@ -22,1026 +46,1279 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        html {
+            font-size: 16px;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'DM Sans', sans-serif;
             background-color: var(--bg-color);
-            color: var(--text-color);
+            color: var(--text-primary);
             margin: 0;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
             min-height: 100dvh;
             touch-action: manipulation;
             overscroll-behavior: none;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        /* --- Header & Top Bar --- */
+        /* Header */
         header {
             width: 100%;
-            padding: 15px;
-            background: var(--accent-dark-blue);
+            padding: 12px 20px;
+            background: var(--midnight);
             color: white;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        h1 { margin: 0; font-size: 1.2rem; }
-        
-        .status-bar {
+        .header-left {
             display: flex;
-            gap: 20px;
-            font-weight: bold;
-            font-size: 1.2rem;
+            align-items: center;
+            gap: 12px;
         }
 
-        .timer-box {
-            background: rgba(0,0,0,0.2);
-            padding: 5px 15px;
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gold);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1rem;
+            color: var(--midnight);
+            transform: rotate(-3deg);
+        }
+
+        .logo-text {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .theme-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .theme-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .stat-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 8px;
-            min-width: 80px;
-            text-align: center;
+            font-weight: 600;
         }
 
-        .score-box {
-            color: var(--accent-yellow);
+        .stat-box.score {
+            color: var(--gold);
         }
 
-        /* --- Main Game Area --- */
+        .stat-box.streak {
+            color: var(--rust);
+        }
+
+        .streak-fire {
+            display: none;
+        }
+
+        .streak-fire.active {
+            display: inline;
+            animation: flicker 0.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0.7;
+            }
+        }
+
+        .play-btn {
+            padding: 1rem 3rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: 'Archivo Black', sans-serif;
+            background: var(--gold);
+            color: var(--midnight);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--gold-dark);
+            transition: all 0.1s;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 var(--gold-dark);
+        }
+
+        .play-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 var(--gold-dark);
+        }
+
+        /* Game Container */
         .game-container {
-            max-width: 800px;
-            width: 95%;
-            margin-top: 20px;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 20px;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 1rem;
         }
 
-        /* The 4 Number Slots */
+        /* Level Select */
+        .level-select {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .level-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--slot-border);
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: 0.2s;
+        }
+
+        .level-btn:hover {
+            border-color: var(--gold);
+            color: var(--text-primary);
+        }
+
+        .level-btn.selected {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: var(--midnight);
+        }
+
+        /* Problem Display */
+        .problem-area {
+            background: var(--slot-bg);
+            border: 2px solid var(--slot-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
         .slots-wrapper {
             display: flex;
-            flex-direction: row;
             justify-content: center;
-            gap: 30px;
-            width: 100%;
-            background: #e9ecef;
-            padding: 20px;
-            border-radius: 15px;
-            border: 2px solid #dee2e6;
+            gap: 1.5rem;
+            flex-wrap: wrap;
         }
 
         .slot-group-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .group-header {
-            font-weight: bold;
-            color: var(--accent-dark-blue);
+            font-weight: 700;
+            color: var(--deep-blue);
             text-transform: uppercase;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        [data-theme="dark"] .group-header {
+            color: var(--gold);
         }
 
         .slot-group {
             display: flex;
-            gap: 15px;
+            gap: 12px;
         }
 
         .card {
             background: var(--card-bg);
             border-radius: 12px;
-            width: 80px;
-            height: 100px;
+            width: 100px;
+            height: 110px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             border: 3px solid transparent;
             transition: all 0.2s;
             position: relative;
         }
 
         .card label {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             text-transform: uppercase;
-            color: #868e96;
-            margin-bottom: 5px;
-            font-weight: bold;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .card input {
-            width: 100%;
+            width: 95%;
             border: none;
             text-align: center;
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--text-color);
+            font-weight: 700;
+            font-family: 'Archivo Black', sans-serif;
+            color: var(--text-primary);
             background: transparent;
             outline: none;
-            pointer-events: none; /* Controlled by keypad */
+            pointer-events: none;
+            padding: 0;
+            margin: 0;
+            /* Default size for 1-2 chars */
+            font-size: 2.2rem;
         }
 
-        /* Active input state */
+        /* Auto-size classes based on character count */
+        .card input.chars-1 { font-size: 2.4rem; }
+        .card input.chars-2 { font-size: 2.2rem; }
+        .card input.chars-3 { font-size: 1.6rem; }
+        .card input.chars-4 { font-size: 1.3rem; }
+
         .card.active {
-            border-color: var(--accent-blue);
-            background-color: #e7f5ff;
+            border-color: var(--gold);
+            background: linear-gradient(135deg, rgba(247, 179, 43, 0.1), rgba(247, 179, 43, 0.05));
             transform: translateY(-2px);
         }
 
         .card.locked {
-            background-color: #f1f3f5;
-            color: #495057;
+            background: var(--slot-bg);
         }
 
+        .card.correct-answer {
+            background: var(--success);
+            border-color: var(--success);
+        }
 
-        /* --- Controls & Keypad --- */
-        .controls-area {
+        .card.correct-answer input {
+            color: white;
+        }
+
+        .card.wrong {
+            animation: shake 0.4s ease;
+            border-color: var(--error);
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-8px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(8px);
+            }
+        }
+
+        /* Message Area */
+        .message-area {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 0.5rem;
+        }
+
+        .msg {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .msg.success {
+            color: var(--success);
+        }
+
+        .msg.error {
+            color: var(--error);
+        }
+
+        .points-popup {
+            font-family: 'Archivo Black', sans-serif;
+            color: var(--gold);
+            animation: popUp 0.6s ease forwards;
+        }
+
+        @keyframes popUp {
+            0% {
+                opacity: 0;
+                transform: scale(0.5) translateY(10px);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2) translateY(-5px);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1) translateY(-20px);
+            }
+        }
+
+        /* Keypad */
+        .keypad-area {
             display: flex;
             justify-content: center;
             gap: 10px;
-            width: 100%;
-        }
-
-        .level-select {
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-        }
-
-        .level-btn {
-            background: white;
-            border: 2px solid var(--accent-blue);
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            color: var(--accent-dark-blue);
-            transition: 0.2s;
-        }
-
-        .level-btn:hover { background: #e7f5ff; }
-        .level-btn.selected {
-            background: var(--accent-blue);
-            color: white;
+            flex: 1;
+            margin-bottom: 1rem;
         }
 
         .keypad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
+            flex: 1;
+            max-width: 400px;
         }
 
         .key {
-            width: 60px;
-            height: 60px;
-            background: var(--accent-yellow);
+            width: 100%;
+            height: 100%;
+            min-height: 60px;
+            background: var(--gold);
             border: none;
-            border-radius: 8px;
-            font-size: 1.5rem;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 700;
+            font-family: 'Archivo Black', sans-serif;
             cursor: pointer;
-            box-shadow: 0 4px 0 #e67700;
-            color: #333;
+            box-shadow: 0 4px 0 var(--gold-dark);
+            color: var(--midnight);
             transition: transform 0.1s;
         }
 
         .key:active {
             transform: translateY(4px);
-            box-shadow: 0 0 0 #e67700;
+            box-shadow: 0 0 0 var(--gold-dark);
         }
 
-        .key.action { background: var(--accent-blue); box-shadow: 0 4px 0 var(--accent-dark-blue); color: white; }
-        .key.delete { background: var(--error); box-shadow: 0 4px 0 #c92a2a; color: white; }
-        .key.submit { background: var(--success); box-shadow: 0 4px 0 #2b8a3e; color: white; font-size: 1rem; }
-        
+        .key.action {
+            background: var(--sky);
+            box-shadow: 0 4px 0 #2563eb;
+            color: white;
+        }
+
+        .key.delete {
+            background: var(--error);
+            box-shadow: 0 4px 0 #b91c1c;
+            color: white;
+        }
+
+        /* Bottom Actions */
         .bottom-actions {
-            width: 100%;
             display: flex;
             justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
+            gap: 12px;
+            margin-bottom: 1rem;
         }
 
         .action-btn {
             padding: 12px 24px;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
+            font-size: 0.9rem;
+            font-weight: 700;
             cursor: pointer;
             text-transform: uppercase;
+            transition: 0.2s;
         }
 
-        .btn-skip { background: #adb5bd; color: white; }
-        .btn-reset { background: var(--accent-orange); color: white; }
+        .btn-skip {
+            background: var(--text-secondary);
+            color: white;
+        }
 
-        /* --- Modals & Overlays --- */
+        .btn-reset {
+            background: var(--rust);
+            color: white;
+        }
+
+        .btn-reset:hover,
+        .btn-skip:hover {
+            opacity: 0.9;
+        }
+
+        /* End Game Modal */
         .overlay {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 22, 40, 0.9);
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 100;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .overlay.active {
+            display: flex;
         }
 
         .modal {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            max-width: 600px;
-            width: 90%;
-            max-height: 80vh;
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
             overflow-y: auto;
             text-align: center;
         }
 
-        .review-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 0.9rem;
+        .modal h2 {
+            font-family: 'Archivo Black', sans-serif;
+            color: var(--midnight);
+            margin-bottom: 1.5rem;
         }
 
-        .review-table th, .review-table td {
-            padding: 8px;
-            border-bottom: 1px solid #dee2e6;
+        [data-theme="dark"] .modal h2 {
+            color: var(--gold);
+        }
+
+        .results-summary {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--midnight);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            min-width: 100px;
+        }
+
+        .summary-card .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .summary-card .value {
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.75rem;
+        }
+
+        /* Streak Achievement Popup */
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: var(--midnight);
+            color: white;
+            padding: 1.5rem 2.5rem;
+            border-radius: 16px;
+            font-family: 'Archivo Black', sans-serif;
+            font-size: 1.5rem;
+            z-index: 2000;
             text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .review-table th { background: #f8f9fa; }
-        
-        .correct { color: var(--success); font-weight: bold; }
-        .wrong { color: var(--error); text-decoration: line-through; }
-        .missed { color: #868e96; font-style: italic; }
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
 
-        /* ==================== MOBILE STYLES ==================== */
-        
-        /* Portrait mode on phones */
-        @media (max-width: 480px) {
-            body {
-                min-height: 100dvh;
-                overflow-x: hidden;
-            }
-            
+        .achievement-popup .emoji {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .achievement-popup .multiplier {
+            color: var(--gold);
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
             header {
-                padding: 8px 12px;
-                box-sizing: border-box;
+                padding: 10px 12px;
             }
-            
-            h1 { font-size: 1rem; }
-            
-            .status-bar {
-                gap: 10px;
-                font-size: 1rem;
+
+            .logo-text {
+                display: none;
             }
-            
-            .timer-box {
-                padding: 4px 10px;
-                min-width: 60px;
+
+            .stat-box {
+                padding: 4px 8px;
+                font-size: 0.85rem;
             }
-            
+
             .game-container {
-                margin-top: 8px;
-                gap: 10px;
-                padding: 0 5px;
-                width: 100%;
-                box-sizing: border-box;
+                padding: 0.5rem;
             }
-            
-            /* Level buttons - compact grid */
-            .level-select {
-                gap: 4px;
-                padding: 0 5px;
+
+            .problem-area {
+                padding: 0.75rem;
+                margin-bottom: 0.5rem;
             }
-            
-            .level-btn {
-                font-size: 0.65rem;
-                padding: 5px 6px;
-                border-width: 1.5px;
+
+            .card {
+                width: 22vw;
+                min-width: 70px;
+                max-width: 90px;
+                height: 80px;
             }
-            
-            /* Cards - smaller but readable */
-            .slots-wrapper {
-                padding: 10px;
-                gap: 15px;
+
+            .card input {
+                font-size: 1.8rem;
+            }
+
+            .card input.chars-1 { font-size: 2rem; }
+            .card input.chars-2 { font-size: 1.8rem; }
+            .card input.chars-3 { font-size: 1.3rem; }
+            .card input.chars-4 { font-size: 1.05rem; }
+
+            .keypad-area {
+                flex: 1;
+                margin-bottom: 0.5rem;
+            }
+
+            .keypad {
+                gap: 6px;
+                max-width: 100%;
+            }
+
+            .key {
+                min-height: 50px;
                 border-radius: 10px;
             }
-            
-            .slot-group-container {
-                gap: 5px;
-            }
-            
-            .group-header {
-                font-size: 0.7rem;
-            }
-            
-            .slot-group {
-                gap: 8px;
-            }
-            
-            .card {
-                width: 60px;
-                height: 70px;
-                border-radius: 8px;
-                border-width: 2px;
-            }
-            
-            .card label {
-                font-size: 0.55rem;
-                margin-bottom: 2px;
-            }
-            
-            .card input {
-                font-size: 1.3rem;
-            }
-            
-            .msg {
-                height: 16px;
-                font-size: 0.85rem;
-                margin-top: 2px;
-            }
-            
-            /* Keypad - LARGER for touch */
-            .controls-area {
-                gap: 6px;
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .keypad {
-                gap: 6px;
-            }
-            
-            .key {
-                width: 70px;
-                height: 55px;
-                font-size: 1.4rem;
-                border-radius: 6px;
-                box-shadow: 0 3px 0 #e67700;
-            }
-            
-            .key.action { box-shadow: 0 3px 0 var(--accent-dark-blue); }
-            .key.delete { box-shadow: 0 3px 0 #c92a2a; }
-            .key.submit { 
-                box-shadow: 0 3px 0 #2b8a3e; 
-                font-size: 0.85rem;
-                width: 70px !important;
-            }
-            
-            .bottom-actions {
-                gap: 10px;
-                margin-top: 5px;
-                padding-bottom: 10px;
-            }
-            
-            .action-btn {
-                padding: 10px 16px;
-                font-size: 0.85rem;
-            }
-        }
-        
-        /* Landscape mode on phones */
-        @media (max-height: 500px) and (orientation: landscape) {
-            body {
-                min-height: 100dvh;
-            }
-            
-            header {
-                padding: 5px 15px;
-                position: sticky;
-                top: 0;
-                z-index: 50;
-            }
-            
-            h1 { font-size: 0.9rem; }
-            
-            .status-bar {
-                font-size: 0.9rem;
-                gap: 15px;
-            }
-            
-            .timer-box {
-                padding: 3px 10px;
-                min-width: 50px;
-            }
-            
-            .game-container {
-                margin-top: 5px;
-                gap: 8px;
-                flex-direction: row;
-                flex-wrap: wrap;
-                justify-content: center;
-                align-items: flex-start;
-                max-width: 100%;
-                padding: 0 10px;
-            }
-            
-            /* Hide level selector in landscape to save space */
-            .level-select {
-                position: absolute;
-                top: -9999px;
-                left: -9999px;
-            }
-            
-            /* Cards row */
-            .slots-wrapper {
-                padding: 8px 15px;
-                gap: 20px;
-                order: 1;
-                flex: 0 0 auto;
-            }
-            
-            .slot-group-container {
-                gap: 4px;
-            }
-            
-            .group-header {
-                font-size: 0.65rem;
-            }
-            
-            .slot-group {
-                gap: 8px;
-            }
-            
-            .card {
-                width: 55px;
-                height: 60px;
-            }
-            
-            .card label {
-                font-size: 0.5rem;
-            }
-            
-            .card input {
-                font-size: 1.2rem;
-            }
-            
-            .msg {
-                order: 2;
-                height: 14px;
-                font-size: 0.75rem;
-                flex: 0 0 100%;
-                text-align: center;
-            }
-            
-            /* Keypad - side by side layout */
-            .controls-area {
-                order: 3;
-                gap: 8px;
-            }
-            
-            .keypad {
-                gap: 4px;
-            }
-            
-            .key {
-                width: 50px;
-                height: 40px;
-                font-size: 1.1rem;
-                box-shadow: 0 2px 0 #e67700;
-            }
-            
-            .key.action { box-shadow: 0 2px 0 var(--accent-dark-blue); }
-            .key.delete { box-shadow: 0 2px 0 #c92a2a; }
-            .key.submit { 
-                box-shadow: 0 2px 0 #2b8a3e;
-                font-size: 0.7rem;
-                width: 50px !important;
-            }
-            
-            .bottom-actions {
-                order: 4;
-                gap: 8px;
-                margin-top: 0;
-                flex: 0 0 auto;
-            }
-            
-            .action-btn {
-                padding: 8px 12px;
-                font-size: 0.7rem;
-            }
-        }
-        
-        /* Tablet portrait */
-        @media (min-width: 481px) and (max-width: 768px) {
-            .game-container {
-                gap: 15px;
-            }
-            
+
             .level-btn {
-                font-size: 0.8rem;
-                padding: 8px 10px;
+                font-size: 0.7rem;
+                padding: 6px 10px;
             }
-            
-            .key {
-                width: 65px;
-                height: 65px;
-                font-size: 1.6rem;
-            }
-            
-            .key.submit {
-                width: 85px !important;
-            }
-        }
-        
-        /* Prevent zoom on input focus (iOS) */
-        @media (max-width: 768px) {
-            input, select, textarea, button {
-                font-size: 16px;
-            }
-            
-            /* Touch feedback */
-            .key:active, .level-btn:active, .action-btn:active, .card:active {
-                transform: scale(0.95);
-            }
-            
-            .card.active:active {
-                transform: translateY(-2px) scale(0.98);
-            }
-        }
 
-        .msg {
-            height: 20px;
-            color: var(--error);
-            font-weight: bold;
-            margin-top: 5px;
-        }
+            .level-select {
+                margin-bottom: 0.5rem;
+            }
 
+            .message-area {
+                height: 24px;
+                margin-bottom: 0.25rem;
+            }
+
+            .bottom-actions {
+                margin-bottom: 0.5rem;
+            }
+
+            .action-btn {
+                padding: 10px 20px;
+                font-size: 0.85rem;
+            }
+        }
     </style>
 </head>
+
 <body>
 
-<header>
-    <div>
-        <span style="font-size: 0.8rem; opacity: 0.8;">LEVEL <span id="currentLevelDisplay">1</span></span>
-        <h1>Math Dash</h1>
-    </div>
-    <div class="status-bar">
-        <div class="timer-box" id="timer">00:00</div>
-        <div class="score-box">✓ <span id="score">0</span></div>
-    </div>
-</header>
+    <!-- Header -->
+    <header>
+        <div class="header-left">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">Σ</div>
+                <span class="logo-text">Mathematician</span>
+            </a>
+            <button onclick="toggleTheme()" class="theme-btn" title="Toggle Theme">🌗</button>
+        </div>
+        <div class="header-stats">
+            <div class="stat-box" id="timerBox">⏱ 0:00</div>
+            <div class="stat-box streak">
+                <span class="streak-fire" id="streakFire">🔥</span>
+                <span id="streakDisplay">0</span>
+            </div>
+            <div class="stat-box score">⭐ <span id="scoreDisplay">0</span></div>
+        </div>
+    </header>
 
-<div class="game-container">
-    
-    <div class="level-select" id="levelSelector">
-        <button class="level-btn selected" onclick="game.setLevel(1)">Level 1 (Integers ±10)</button>
-        <button class="level-btn" onclick="game.setLevel(2)">Level 2 (Integers ±15)</button>
-        <button class="level-btn" onclick="game.setLevel(3)">Level 3 (Sum/Prod ±10)</button>
-        <button class="level-btn" onclick="game.setLevel(4)">Level 4 (Sum/Prod Fast)</button>
-        <button class="level-btn" onclick="game.setLevel(5)">Level 5 (Random ±10)</button>
-        <button class="level-btn" onclick="game.setLevel(6)">Level 6 (Random ±15)</button>
-    </div>
+    <!-- Game Container -->
+    <div class="game-container" id="gameContainer">
 
-    <div class="slots-wrapper">
-        <div class="slot-group-container">
-            <div class="group-header">Integers</div>
-            <div class="slot-group">
-                <div class="card" id="card-i1" onclick="game.setActiveInput('i1')">
-                    <label>Int 1</label>
-                    <input type="text" id="input-i1" readonly>
+        <!-- Level Select -->
+        <div class="level-select" id="levelSelector">
+            <button class="level-btn selected" onclick="game.setLevel(1)">Sum/Product (±10)</button>
+            <button class="level-btn" onclick="game.setLevel(2)">Sum/Product (±15)</button>
+            <button class="level-btn" onclick="game.setLevel(3)">Find Integers (±10)</button>
+            <button class="level-btn" onclick="game.setLevel(4)">Find Integers (±15)</button>
+            <button class="level-btn" onclick="game.setLevel(5)">Random Mix (±10)</button>
+            <button class="level-btn" onclick="game.setLevel(6)">Random Mix (±15)</button>
+        </div>
+
+        <!-- Problem Area -->
+        <div class="problem-area">
+            <div class="slots-wrapper">
+                <div class="slot-group-container">
+                    <div class="group-header">Integers</div>
+                    <div class="slot-group">
+                        <div class="card" id="card-i1" onclick="game.setActiveInput('i1')">
+                            <label>Int 1</label>
+                            <input type="text" id="input-i1" readonly>
+                        </div>
+                        <div class="card" id="card-i2" onclick="game.setActiveInput('i2')">
+                            <label>Int 2</label>
+                            <input type="text" id="input-i2" readonly>
+                        </div>
+                    </div>
                 </div>
-                <div class="card" id="card-i2" onclick="game.setActiveInput('i2')">
-                    <label>Int 2</label>
-                    <input type="text" id="input-i2" readonly>
+                <div class="slot-group-container">
+                    <div class="group-header">Results</div>
+                    <div class="slot-group">
+                        <div class="card" id="card-sum" onclick="game.setActiveInput('sum')">
+                            <label>Sum</label>
+                            <input type="text" id="input-sum" readonly>
+                        </div>
+                        <div class="card" id="card-prod" onclick="game.setActiveInput('prod')">
+                            <label>Product</label>
+                            <input type="text" id="input-prod" readonly>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="slot-group-container">
-            <div class="group-header">Results</div>
-            <div class="slot-group">
-                <div class="card" id="card-sum" onclick="game.setActiveInput('sum')">
-                    <label>Sum</label>
-                    <input type="text" id="input-sum" readonly>
-                </div>
-                <div class="card" id="card-prod" onclick="game.setActiveInput('prod')">
-                    <label>Prod</label>
-                    <input type="text" id="input-prod" readonly>
-                </div>
+        <!-- Message Area -->
+        <div class="message-area">
+            <div class="msg" id="messageBox"></div>
+            <div class="points-popup" id="pointsPopup"></div>
+        </div>
+
+        <!-- Keypad -->
+        <div class="keypad-area">
+            <div class="keypad">
+                <button class="key" onclick="game.typeNum(7)">7</button>
+                <button class="key" onclick="game.typeNum(8)">8</button>
+                <button class="key" onclick="game.typeNum(9)">9</button>
+                <button class="key" onclick="game.typeNum(4)">4</button>
+                <button class="key" onclick="game.typeNum(5)">5</button>
+                <button class="key" onclick="game.typeNum(6)">6</button>
+                <button class="key" onclick="game.typeNum(1)">1</button>
+                <button class="key" onclick="game.typeNum(2)">2</button>
+                <button class="key" onclick="game.typeNum(3)">3</button>
+                <button class="key action" onclick="game.typeNum('-')">−</button>
+                <button class="key" onclick="game.typeNum(0)">0</button>
+                <button class="key delete" onclick="game.backspace()">⌫</button>
             </div>
         </div>
-    </div>
-    
-    <div class="msg" id="messageBox"></div>
 
-    <div class="controls-area">
-        <div class="keypad">
-            <button class="key" onclick="game.typeNum(7)">7</button>
-            <button class="key" onclick="game.typeNum(8)">8</button>
-            <button class="key" onclick="game.typeNum(9)">9</button>
-            <button class="key" onclick="game.typeNum(4)">4</button>
-            <button class="key" onclick="game.typeNum(5)">5</button>
-            <button class="key" onclick="game.typeNum(6)">6</button>
-            <button class="key" onclick="game.typeNum(1)">1</button>
-            <button class="key" onclick="game.typeNum(2)">2</button>
-            <button class="key" onclick="game.typeNum(3)">3</button>
-            <button class="key action" onclick="game.typeNum('-')">-</button>
-            <button class="key" onclick="game.typeNum(0)">0</button>
-            <button class="key delete" onclick="game.backspace()">⌫</button>
-        </div>
-        
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <button class="key submit" style="height: 100%; width: 80px;" onclick="game.checkAnswer()">ENTER</button>
+        <!-- Bottom Actions -->
+        <div class="bottom-actions">
+            <button class="action-btn btn-reset" onclick="game.resetGame()">New Game</button>
+            <button class="action-btn btn-skip" onclick="game.skipProblem()">Skip →</button>
         </div>
     </div>
 
-    <div class="bottom-actions">
-        <button class="action-btn btn-reset" onclick="game.resetGame()">Reset / New</button>
-        <button class="action-btn btn-skip" onclick="game.skipProblem()">Skip >></button>
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <span class="emoji" id="achievementEmoji">🔥</span>
+        <span id="achievementText">ON FIRE!</span>
+        <div class="multiplier" id="achievementMultiplier">1.5x multiplier active!</div>
     </div>
 
-</div>
-
-<div class="overlay" id="endModal">
-    <div class="modal">
-        <h2 style="color: var(--accent-dark-blue);">Time's Up!</h2>
-        <h3>Score: <span id="finalScore">0</span></h3>
-        <p>Here is how you did:</p>
-        
-        <table class="review-table">
-            <thead>
-                <tr>
-                    <th>Problem</th>
-                    <th>You Typed</th>
-                    <th>Correct</th>
-                </tr>
-            </thead>
-            <tbody id="reviewBody">
-                </tbody>
-        </table>
-
-        <div style="margin-top: 20px;">
-            <button class="action-btn btn-reset" onclick="game.resetGame()">Play Again</button>
+    <!-- End Game Modal -->
+    <div class="overlay" id="endModal">
+        <div class="modal">
+            <h2 id="endTitle">Round Complete!</h2>
+            <div class="results-summary">
+                <div class="summary-card">
+                    <div class="label">Total Score</div>
+                    <div class="value" id="finalScore">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Best Streak</div>
+                    <div class="value" id="finalStreak">0</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Time</div>
+                    <div class="value" id="finalTime">0:00</div>
+                </div>
+            </div>
+            <button class="play-btn" onclick="game.resetGame()">Play Again</button>
         </div>
     </div>
-</div>
 
-<script>
-class MathGame {
-    constructor() {
-        this.level = 1;
-        this.score = 0;
-        this.isPlaying = false;
-        this.timerInterval = null;
-        this.currentProblem = {};
-        this.activeFieldId = null;
-        this.history = []; // Stores rounds for review
-        
-        // Configuration from Sticky Notes
-        this.levelConfig = {
-            1: { time: 300, range: 10, mode: 'find_results', excludeZero: true }, // 5 mins
-            2: { time: 300, range: 15, mode: 'find_results', excludeZero: true }, // 5 mins
-            3: { time: 120, range: 10, mode: 'find_integers', excludeZero: false }, // 2 mins
-            4: { time: 60, range: 10, mode: 'find_integers', excludeZero: false },  // 1 min
-            5: { time: 60, range: 10, mode: 'random', excludeZero: false },         // 1 min
-            6: { time: 30, range: 15, mode: 'random', excludeZero: false }          // 30 sec
-        };
+    <script>
+        class MathGame {
+            constructor() {
+                this.level = 1;
+                this.score = 0;
+                this.streak = 0;
+                this.bestStreak = 0;
+                this.isPlaying = false;
+                this.timerInterval = null;
+                this.currentProblem = {};
+                this.activeFieldId = null;
+                this.questionsAnswered = 0;
+                this.questionsToSolve = 10;
+                this.questionStartTime = null;
 
-        this.init();
-    }
+                this.levelConfig = {
+                    1: { range: 10, mode: 'find_results' },
+                    2: { range: 15, mode: 'find_results' },
+                    3: { range: 10, mode: 'find_integers' },
+                    4: { range: 15, mode: 'find_integers' },
+                    5: { range: 10, mode: 'random' },
+                    6: { range: 15, mode: 'random' }
+                };
 
-    init() {
-        this.setLevel(1);
-    }
-
-    setLevel(lvl) {
-        this.level = lvl;
-        document.querySelectorAll('.level-btn').forEach((btn, idx) => {
-            btn.classList.toggle('selected', idx + 1 === lvl);
-        });
-        document.getElementById('currentLevelDisplay').innerText = lvl;
-        
-        // Reset game state on level change
-        this.resetGame();
-    }
-
-    resetGame() {
-        clearInterval(this.timerInterval);
-        this.score = 0;
-        this.history = [];
-        this.isPlaying = true;
-        this.timeLeft = this.levelConfig[this.level].time;
-        
-        document.getElementById('score').innerText = '0';
-        document.getElementById('endModal').style.display = 'none';
-        document.getElementById('messageBox').innerText = '';
-        
-        this.startTimer();
-        this.generateProblem();
-    }
-
-    startTimer() {
-        this.updateTimerDisplay();
-        this.timerInterval = setInterval(() => {
-            this.timeLeft--;
-            this.updateTimerDisplay();
-            if (this.timeLeft <= 0) {
-                this.endGame();
+                this.init();
             }
-        }, 1000);
-    }
 
-    updateTimerDisplay() {
-        const m = Math.floor(this.timeLeft / 60);
-        const s = this.timeLeft % 60;
-        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-    }
-
-    generateProblem() {
-        const config = this.levelConfig[this.level];
-        let i1, i2;
-
-        // Generate Integers
-        do {
-            i1 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
-        } while (config.excludeZero && i1 === 0);
-
-        do {
-            i2 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
-        } while (config.excludeZero && i2 === 0);
-
-        const sum = i1 + i2;
-        const prod = i1 * i2;
-
-        this.currentProblem = { i1, i2, sum, prod };
-
-        // Determine what to hide based on mode
-        let toHide = [];
-        
-        if (config.mode === 'find_results') {
-            toHide = ['sum', 'prod'];
-        } else if (config.mode === 'find_integers') {
-            toHide = ['i1', 'i2'];
-        } else if (config.mode === 'random') {
-            const options = ['i1', 'i2', 'sum', 'prod'];
-            // Shuffle and pick 2
-            const shuffled = options.sort(() => 0.5 - Math.random());
-            toHide = [shuffled[0], shuffled[1]];
-        }
-
-        this.currentProblem.hiddenFields = toHide;
-        this.renderBoard();
-    }
-
-    renderBoard() {
-        const fields = ['i1', 'i2', 'sum', 'prod'];
-        let firstHidden = null;
-
-        fields.forEach(field => {
-            const input = document.getElementById(`input-${field}`);
-            const card = document.getElementById(`card-${field}`);
-            
-            input.value = '';
-            card.classList.remove('active', 'locked');
-
-            if (this.currentProblem.hiddenFields.includes(field)) {
-                // This is a field user needs to guess
-                if (!firstHidden) firstHidden = field;
-            } else {
-                // This is a given value
-                input.value = this.currentProblem[field];
-                card.classList.add('locked');
+            init() {
+                this.resetGame();
             }
-        });
 
-        if (firstHidden) {
-            this.setActiveInput(firstHidden);
-        }
-    }
-
-    setActiveInput(fieldId) {
-        if (!this.isPlaying) return;
-        
-        // Cannot select locked fields
-        if (!this.currentProblem.hiddenFields.includes(fieldId)) return;
-
-        // Remove active class from others
-        document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
-        
-        this.activeFieldId = fieldId;
-        document.getElementById(`card-${fieldId}`).classList.add('active');
-    }
-
-    typeNum(val) {
-        if (!this.activeFieldId || !this.isPlaying) return;
-        const input = document.getElementById(`input-${this.activeFieldId}`);
-        
-        if (val === '-' && input.value.includes('-')) return; // Only one minus
-        if (val === '-' && input.value.length > 0) return; // Minus must be first
-        if (input.value.length > 4) return; // Max length
-
-        input.value += val;
-    }
-
-    backspace() {
-        if (!this.activeFieldId || !this.isPlaying) return;
-        const input = document.getElementById(`input-${this.activeFieldId}`);
-        input.value = input.value.slice(0, -1);
-    }
-
-    checkAnswer() {
-        if (!this.isPlaying) return;
-
-        const hidden = this.currentProblem.hiddenFields;
-        const userValues = {};
-        let isCorrect = true;
-
-        // Gather user inputs
-        hidden.forEach(field => {
-            const val = document.getElementById(`input-${field}`).value;
-            userValues[field] = val === '' || val === '-' ? null : parseInt(val);
-        });
-
-        // Validation Logic
-        // Special logic for "Find Integers" (Order doesn't matter)
-        const config = this.levelConfig[this.level];
-        
-        if (hidden.includes('i1') && hidden.includes('i2') && !hidden.includes('sum')) {
-            // User is finding both integers (Factoring)
-            // Check if user inputs match i1 AND i2 in any order
-            const u1 = userValues['i1'];
-            const u2 = userValues['i2'];
-            const a1 = this.currentProblem.i1;
-            const a2 = this.currentProblem.i2;
-
-            if (u1 === null || u2 === null) isCorrect = false;
-            else {
-                const matchDirect = (u1 === a1 && u2 === a2);
-                const matchSwap = (u1 === a2 && u2 === a1);
-                if (!matchDirect && !matchSwap) isCorrect = false;
-            }
-        } else {
-            // Standard check for other modes
-            hidden.forEach(field => {
-                if (userValues[field] !== this.currentProblem[field]) {
-                    isCorrect = false;
+            setLevel(lvl) {
+                this.level = lvl;
+                document.querySelectorAll('.level-btn').forEach((btn, idx) => {
+                    btn.classList.toggle('selected', idx + 1 === lvl);
+                });
+                if (this.isPlaying) {
+                    this.generateProblem();
                 }
-            });
-        }
+            }
 
-        if (isCorrect) {
-            this.score++;
-            document.getElementById('score').innerText = this.score;
-            document.getElementById('messageBox').innerText = "Correct!";
-            document.getElementById('messageBox').style.color = "var(--success)";
-            
-            this.saveHistory(userValues, true);
-            setTimeout(() => {
-                document.getElementById('messageBox').innerText = "";
+            resetGame() {
+                clearInterval(this.timerInterval);
+                this.score = 0;
+                this.streak = 0;
+                this.bestStreak = 0;
+                this.questionsAnswered = 0;
+                this.isPlaying = true;
+                this.elapsedTime = 0;
+
+                document.getElementById('scoreDisplay').textContent = '0';
+                document.getElementById('streakDisplay').textContent = '0';
+                document.getElementById('streakFire').classList.remove('active');
+                document.getElementById('endModal').classList.remove('active');
+                document.getElementById('messageBox').textContent = '';
+
+                this.startTimer();
                 this.generateProblem();
-            }, 500);
-        } else {
-            document.getElementById('messageBox').innerText = "Try Again!";
-            document.getElementById('messageBox').style.color = "var(--error)";
-            // Shake animation logic could go here
+            }
+
+            startTimer() {
+                this.updateTimerDisplay();
+                this.timerInterval = setInterval(() => {
+                    this.elapsedTime++;
+                    this.updateTimerDisplay();
+                }, 1000);
+            }
+
+            updateTimerDisplay() {
+                const m = Math.floor(this.elapsedTime / 60);
+                const s = this.elapsedTime % 60;
+                document.getElementById('timerBox').textContent = `⏱ ${m}:${s < 10 ? '0' + s : s}`;
+            }
+
+            generateProblem() {
+                const config = this.levelConfig[this.level];
+                let i1, i2;
+
+                // Never allow zero for integers (only sum can be zero)
+                do {
+                    i1 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
+                } while (i1 === 0);
+
+                do {
+                    i2 = Math.floor(Math.random() * (config.range * 2 + 1)) - config.range;
+                } while (i2 === 0);
+
+                const sum = i1 + i2;
+                const prod = i1 * i2;
+
+                this.currentProblem = { i1, i2, sum, prod };
+
+                let toHide = [];
+                if (config.mode === 'find_results') {
+                    toHide = ['sum', 'prod'];
+                } else if (config.mode === 'find_integers') {
+                    toHide = ['i1', 'i2'];
+                } else if (config.mode === 'random') {
+                    const options = ['i1', 'i2', 'sum', 'prod'];
+                    const shuffled = options.sort(() => 0.5 - Math.random());
+                    toHide = [shuffled[0], shuffled[1]];
+                }
+
+                this.currentProblem.hiddenFields = toHide;
+                this.questionStartTime = Date.now();
+                this.renderBoard();
+            }
+
+            renderBoard() {
+                const fields = ['i1', 'i2', 'sum', 'prod'];
+                let firstHidden = null;
+
+                fields.forEach(field => {
+                    const input = document.getElementById(`input-${field}`);
+                    const card = document.getElementById(`card-${field}`);
+
+                    input.value = '';
+                    input.classList.remove('chars-1', 'chars-2', 'chars-3', 'chars-4');
+                    card.classList.remove('active', 'locked', 'correct-answer', 'wrong');
+
+                    if (this.currentProblem.hiddenFields.includes(field)) {
+                        if (!firstHidden) firstHidden = field;
+                    } else {
+                        input.value = this.currentProblem[field];
+                        card.classList.add('locked');
+                        this.updateInputSize(input);
+                    }
+                });
+
+                if (firstHidden) {
+                    this.setActiveInput(firstHidden);
+                }
+
+                document.getElementById('messageBox').textContent = '';
+            }
+
+            setActiveInput(fieldId) {
+                if (!this.isPlaying) return;
+                if (!this.currentProblem.hiddenFields.includes(fieldId)) return;
+
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+                this.activeFieldId = fieldId;
+                document.getElementById(`card-${fieldId}`).classList.add('active');
+            }
+
+            switchActiveInput() {
+                if (!this.isPlaying) return;
+                const hidden = this.currentProblem.hiddenFields;
+                if (!hidden || hidden.length < 2) return;
+
+                let currentIdx = hidden.indexOf(this.activeFieldId);
+                const nextIdx = (currentIdx + 1) % hidden.length;
+                this.setActiveInput(hidden[nextIdx]);
+            }
+
+            typeNum(val) {
+                if (!this.activeFieldId || !this.isPlaying) return;
+                const input = document.getElementById(`input-${this.activeFieldId}`);
+
+                if (val === '-' && input.value.includes('-')) return;
+                if (val === '-' && input.value.length > 0) return;
+                if (input.value.length >= 4) return;
+
+                input.value += val;
+                this.updateInputSize(input);
+                this.haptic();
+
+                // Auto-check after typing
+                this.autoCheckField();
+            }
+
+            autoCheckField() {
+                if (!this.isPlaying || !this.activeFieldId) return;
+
+                const hidden = this.currentProblem.hiddenFields;
+                const currentField = this.activeFieldId;
+                const input = document.getElementById(`input-${currentField}`);
+                const userVal = parseInt(input.value);
+
+                // Don't check if input is empty or just a minus sign
+                if (input.value === '' || input.value === '-' || isNaN(userVal)) return;
+
+                // Update font size class
+                this.updateInputSize(input);
+
+                // For find_integers mode (both i1 and i2 hidden)
+                if (hidden.includes('i1') && hidden.includes('i2')) {
+                    const a1 = this.currentProblem.i1;
+                    const a2 = this.currentProblem.i2;
+
+                    // Check if the current value matches either correct integer
+                    if (userVal === a1 || userVal === a2) {
+                        document.getElementById(`card-${currentField}`).classList.add('correct-answer');
+                        this.haptic();
+
+                        // Check the other field
+                        const otherField = currentField === 'i1' ? 'i2' : 'i1';
+                        const otherCard = document.getElementById(`card-${otherField}`);
+                        const otherInput = document.getElementById(`input-${otherField}`);
+                        const otherVal = parseInt(otherInput.value);
+
+                        if (otherCard.classList.contains('correct-answer') && !isNaN(otherVal)) {
+                            // Both fields filled and green - verify the pair
+                            const correctPair = [a1, a2].sort((a, b) => a - b);
+                            const userPair = [userVal, otherVal].sort((a, b) => a - b);
+
+                            if (correctPair[0] === userPair[0] && correctPair[1] === userPair[1]) {
+                                this.handleCorrectAnswer(hidden);
+                            }
+                        } else {
+                            // Switch to the other field
+                            this.setActiveInput(otherField);
+                        }
+                    }
+                    return;
+                }
+
+                // For other modes, check individual field
+                const correctVal = this.currentProblem[currentField];
+
+                if (userVal === correctVal) {
+                    // This field is correct - mark it green
+                    document.getElementById(`card-${currentField}`).classList.add('correct-answer');
+                    this.haptic();
+
+                    // Find next unanswered hidden field
+                    const otherFields = hidden.filter(f => f !== currentField);
+                    const unansweredFields = otherFields.filter(f => {
+                        const card = document.getElementById(`card-${f}`);
+                        return !card.classList.contains('correct-answer');
+                    });
+
+                    if (unansweredFields.length > 0) {
+                        // Switch to next field
+                        this.setActiveInput(unansweredFields[0]);
+                    } else {
+                        // All fields answered correctly
+                        this.handleCorrectAnswer(hidden);
+                    }
+                }
+            }
+
+            updateInputSize(input) {
+                input.classList.remove('chars-1', 'chars-2', 'chars-3', 'chars-4');
+                const len = input.value.length;
+                if (len >= 4) input.classList.add('chars-4');
+                else if (len === 3) input.classList.add('chars-3');
+                else if (len === 2) input.classList.add('chars-2');
+                else if (len === 1) input.classList.add('chars-1');
+            }
+
+            haptic() {
+                if (navigator.vibrate) {
+                    navigator.vibrate(10);
+                }
+            }
+
+            backspace() {
+                if (!this.activeFieldId || !this.isPlaying) return;
+                const input = document.getElementById(`input-${this.activeFieldId}`);
+                input.value = input.value.slice(0, -1);
+                this.updateInputSize(input);
+                this.haptic();
+            }
+
+            calculateScore(timeSeconds) {
+                const config = this.levelConfig[this.level];
+
+                // Base points by mode
+                const basePoints = {
+                    'find_results': 10,
+                    'find_integers': 25,
+                    'random': 15
+                };
+
+                // Range multiplier
+                const rangeMultiplier = config.range >= 15 ? 1.3 : 1.0;
+
+                // Speed bonus
+                let speedMultiplier = 1.0;
+                if (timeSeconds < 3) speedMultiplier = 1.5;
+                else if (timeSeconds < 6) speedMultiplier = 1.25;
+                else if (timeSeconds < 10) speedMultiplier = 1.1;
+
+                // Streak multiplier
+                let streakMultiplier = 1.0;
+                if (this.streak >= 50) streakMultiplier = 2.5;
+                else if (this.streak >= 25) streakMultiplier = 2.0;
+                else if (this.streak >= 15) streakMultiplier = 1.8;
+                else if (this.streak >= 10) streakMultiplier = 1.5;
+                else if (this.streak >= 5) streakMultiplier = 1.2;
+
+                let points = basePoints[config.mode] * rangeMultiplier * speedMultiplier * streakMultiplier;
+
+                // Bonus for negatives
+                if (this.currentProblem.i1 < 0 && this.currentProblem.i2 < 0) points += 3;
+
+                return Math.round(points);
+            }
+
+            checkAnswer() {
+                if (!this.isPlaying) return;
+
+                const hidden = this.currentProblem.hiddenFields;
+
+                // Check if we're in partial-check mode (one field at a time)
+                // For find_integers mode, we check both at once (order doesn't matter)
+                if (hidden.includes('i1') && hidden.includes('i2')) {
+                    // Check both integers together
+                    const userI1 = parseInt(document.getElementById('input-i1').value);
+                    const userI2 = parseInt(document.getElementById('input-i2').value);
+
+                    const correctPair = [this.currentProblem.i1, this.currentProblem.i2].sort((a, b) => a - b);
+                    const userPair = [userI1, userI2].sort((a, b) => a - b);
+
+                    const allCorrect = (correctPair[0] === userPair[0] && correctPair[1] === userPair[1]);
+
+                    if (allCorrect) {
+                        this.handleCorrectAnswer(hidden);
+                    } else {
+                        this.handleWrongAnswer(hidden);
+                    }
+                } else {
+                    // Check fields one at a time and auto-switch
+                    const currentField = this.activeFieldId;
+                    const userVal = parseInt(document.getElementById(`input-${currentField}`).value);
+                    const correctVal = this.currentProblem[currentField];
+
+                    if (userVal === correctVal) {
+                        // This field is correct - mark it green
+                        document.getElementById(`card-${currentField}`).classList.add('correct-answer');
+                        this.haptic();
+
+                        // Find next unanswered hidden field
+                        const otherFields = hidden.filter(f => f !== currentField);
+                        const unansweredFields = otherFields.filter(f => {
+                            const card = document.getElementById(`card-${f}`);
+                            return !card.classList.contains('correct-answer');
+                        });
+
+                        if (unansweredFields.length > 0) {
+                            // Switch to next field
+                            this.setActiveInput(unansweredFields[0]);
+                        } else {
+                            // All fields answered correctly
+                            this.handleCorrectAnswer(hidden);
+                        }
+                    } else {
+                        this.handleWrongAnswer(hidden);
+                    }
+                }
+            }
+
+            handleCorrectAnswer(hidden) {
+                // Calculate time and score
+                const timeSpent = (Date.now() - this.questionStartTime) / 1000;
+                this.streak++;
+                if (this.streak > this.bestStreak) this.bestStreak = this.streak;
+
+                const points = this.calculateScore(timeSpent);
+                this.score += points;
+                this.questionsAnswered++;
+
+                // Update displays
+                document.getElementById('scoreDisplay').textContent = this.score;
+                document.getElementById('streakDisplay').textContent = this.streak;
+
+                // Show streak fire
+                if (this.streak >= 5) {
+                    document.getElementById('streakFire').classList.add('active');
+                }
+
+                // Show points popup
+                this.showPointsPopup(points);
+
+                // Check for streak achievements
+                this.checkStreakAchievement();
+
+                // Visual feedback - mark all hidden fields as correct
+                hidden.forEach(field => {
+                    document.getElementById(`card-${field}`).classList.add('correct-answer');
+                });
+
+                document.getElementById('messageBox').textContent = 'Correct!';
+                document.getElementById('messageBox').className = 'msg success';
+
+                this.haptic();
+
+                // Check if game over
+                if (this.questionsAnswered >= this.questionsToSolve) {
+                    setTimeout(() => this.endGame(), 500);
+                } else {
+                    setTimeout(() => {
+                        hidden.forEach(field => {
+                            document.getElementById(`card-${field}`).classList.remove('correct-answer');
+                        });
+                        this.generateProblem();
+                    }, 400);
+                }
+            }
+
+            handleWrongAnswer(hidden) {
+                // Wrong answer
+                this.streak = Math.max(0, this.streak - 3);
+                document.getElementById('streakDisplay').textContent = this.streak;
+
+                if (this.streak < 5) {
+                    document.getElementById('streakFire').classList.remove('active');
+                }
+
+                document.getElementById('messageBox').textContent = 'Try Again!';
+                document.getElementById('messageBox').className = 'msg error';
+
+                // Shake animation
+                hidden.forEach(field => {
+                    const card = document.getElementById(`card-${field}`);
+                    card.classList.add('wrong');
+                    setTimeout(() => card.classList.remove('wrong'), 400);
+                });
+            }
+
+            showPointsPopup(points) {
+                const popup = document.getElementById('pointsPopup');
+                popup.textContent = `+${points}`;
+                popup.style.animation = 'none';
+                popup.offsetHeight; // Trigger reflow
+                popup.style.animation = 'popUp 0.6s ease forwards';
+            }
+
+            checkStreakAchievement() {
+                const achievements = {
+                    5: { emoji: '🔥', text: 'ON FIRE!', mult: '1.2x' },
+                    10: { emoji: '⚡', text: 'UNSTOPPABLE!', mult: '1.5x' },
+                    15: { emoji: '💥', text: 'DOMINATING!', mult: '1.8x' },
+                    25: { emoji: '👑', text: 'LEGENDARY!', mult: '2.0x' },
+                    50: { emoji: '🏆', text: 'GODLIKE!', mult: '2.5x' }
+                };
+
+                if (achievements[this.streak]) {
+                    const a = achievements[this.streak];
+                    document.getElementById('achievementEmoji').textContent = a.emoji;
+                    document.getElementById('achievementText').textContent = a.text;
+                    document.getElementById('achievementMultiplier').textContent = `${a.mult} multiplier active!`;
+
+                    const popup = document.getElementById('achievementPopup');
+                    popup.classList.add('show');
+                    setTimeout(() => popup.classList.remove('show'), 1500);
+                }
+            }
+
+            skipProblem() {
+                if (!this.isPlaying) return;
+                this.streak = 0;
+                document.getElementById('streakDisplay').textContent = '0';
+                document.getElementById('streakFire').classList.remove('active');
+                this.generateProblem();
+                document.getElementById('messageBox').textContent = 'Skipped';
+                document.getElementById('messageBox').className = 'msg';
+            }
+
+            endGame() {
+                this.isPlaying = false;
+                clearInterval(this.timerInterval);
+
+                const m = Math.floor(this.elapsedTime / 60);
+                const s = this.elapsedTime % 60;
+                const finalTimeStr = `${m}:${s < 10 ? '0' + s : s}`;
+
+                document.getElementById('finalScore').textContent = this.score;
+                document.getElementById('finalStreak').textContent = this.bestStreak;
+                document.getElementById('finalTime').textContent = finalTimeStr;
+
+                document.getElementById('endModal').classList.add('active');
+            }
         }
-    }
 
-    skipProblem() {
-        if (!this.isPlaying) return;
-        
-        // Gather what they had typed so far for the review
-        const hidden = this.currentProblem.hiddenFields;
-        const userValues = {};
-        hidden.forEach(field => {
-            const val = document.getElementById(`input-${field}`).value;
-            userValues[field] = val;
+        // Initialize game
+        window.game = new MathGame();
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            document.body.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+        }
+
+        // Keyboard support
+        document.addEventListener('keydown', (e) => {
+            if (!window.game || !window.game.isPlaying) return;
+
+            if (e.key >= '0' && e.key <= '9') {
+                game.typeNum(e.key);
+                return;
+            }
+            if (e.key === '-' || e.key === '_') {
+                game.typeNum('-');
+                return;
+            }
+            if (e.key === 'Backspace' || e.key === 'Delete') {
+                game.backspace();
+                return;
+            }
+            if (e.key === 'Enter' || e.key === '=') {
+                e.preventDefault();
+                game.checkAnswer();
+                return;
+            }
+            if (e.key === 'Tab' || e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                game.switchActiveInput();
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                game.switchActiveInput();
+            }
         });
-
-        this.saveHistory(userValues, false);
-        this.generateProblem();
-        document.getElementById('messageBox').innerText = "Skipped";
-        document.getElementById('messageBox').style.color = "#868e96";
-    }
-
-    saveHistory(userInputs, wasCorrect) {
-        this.history.push({
-            problem: {...this.currentProblem},
-            userInputs: userInputs,
-            wasCorrect: wasCorrect
-        });
-    }
-
-    endGame() {
-        this.isPlaying = false;
-        clearInterval(this.timerInterval);
-        
-        document.getElementById('endModal').style.display = 'flex';
-        document.getElementById('finalScore').innerText = this.score;
-
-        const tbody = document.getElementById('reviewBody');
-        tbody.innerHTML = '';
-
-        this.history.forEach(round => {
-            const row = document.createElement('tr');
-            
-            // Format what the problem was (showing givens)
-            const givens = ['i1', 'i2', 'sum', 'prod']
-                .filter(f => !round.problem.hiddenFields.includes(f))
-                .map(f => `${f.toUpperCase()}:${round.problem[f]}`)
-                .join(', ');
-
-            // Format User Answers vs Correct
-            let userAnswerStr = '';
-            let correctStr = '';
-
-            round.problem.hiddenFields.forEach(f => {
-                let uVal = round.userInputs[f];
-                if (uVal === '' || uVal === null) uVal = '-';
-                
-                const cVal = round.problem[f];
-                
-                userAnswerStr += `<div>${f}: ${uVal}</div>`;
-                correctStr += `<div>${f}: ${cVal}</div>`;
-            });
-
-            const statusClass = round.wasCorrect ? 'correct' : 'wrong';
-
-            row.innerHTML = `
-                <td style="font-size:0.8em; color:#555;">${givens}</td>
-                <td class="${statusClass}">${userAnswerStr}</td>
-                <td class="correct">${correctStr}</td>
-            `;
-            tbody.appendChild(row);
-        });
-    }
-}
-
-// Start the game instance
-window.game = new MathGame();
-
-// Keyboard support
-document.addEventListener('keydown', (e) => {
-    // Ensure game instance exists and is playing
-    if (!window.game || !window.game.isPlaying) return;
-    
-    const game = window.game;
-    
-    // Numbers
-    if (e.key >= '0' && e.key <= '9') {
-        game.typeNum(e.key);
-        return;
-    }
-    
-    // Numpad support might be needed if not handled by standard 0-9 check (usually is, but good to be safe)
-    
-    // Operators/Actions
-    if (e.key === '-' || e.key === '_') {
-        game.typeNum('-');
-        return;
-    }
-    if (e.key === 'Backspace' || e.key === 'Delete') {
-        game.backspace();
-        return;
-    }
-    if (e.key === 'Enter' || e.key === '=') {
-        e.preventDefault(); // Prevent form submission if any
-        game.checkAnswer();
-        return;
-    }
-    
-    // Navigation
-    if (e.key === 'Tab' || e.key === 'ArrowRight') {
-        e.preventDefault();
-        const hidden = game.currentProblem.hiddenFields;
-        if (!hidden || hidden.length === 0) return;
-        
-        let currentIdx = hidden.indexOf(game.activeFieldId);
-        if (currentIdx === -1) currentIdx = -1;
-        
-        const nextIdx = (currentIdx + 1) % hidden.length;
-        game.setActiveInput(hidden[nextIdx]);
-    }
-    
-    if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        const hidden = game.currentProblem.hiddenFields;
-        if (!hidden || hidden.length === 0) return;
-        
-        let currentIdx = hidden.indexOf(game.activeFieldId);
-        if (currentIdx === -1) currentIdx = hidden.length;
-        
-        const prevIdx = (currentIdx - 1 + hidden.length) % hidden.length;
-        game.setActiveInput(hidden[prevIdx]);
-    }
-});
-
-</script>
+    </script>
 
 </body>
-</html>
 
+</html>
