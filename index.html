@@ -1060,16 +1060,7 @@
                 const s = this.elapsedTime % 60;
                 const finalTimeStr = `${m}:${s < 10 ? '0' + s : s}`;
 
-                const levelNames = {
-                    1: 'Sum/Product (±10)',
-                    2: 'Sum/Product (±15)',
-                    3: 'Find Integers (±10)',
-                    4: 'Find Integers (±15)',
-                    5: 'Random Mix (±10)',
-                    6: 'Random Mix (±15)'
-                };
-
-                document.getElementById('endLevel').textContent = levelNames[this.level];
+                document.getElementById('endLevel').textContent = `Level ${this.level}`;
                 document.getElementById('finalTime').textContent = finalTimeStr;
                 document.getElementById('endSaying').textContent = this.getTimeSaying(this.elapsedTime);
 
