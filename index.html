@@ -678,6 +678,7 @@
     <div class="overlay" id="endModal">
         <div class="modal">
             <h2 id="endTitle">Round Complete!</h2>
+            <div class="end-level" id="endLevel" style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;"></div>
             <div class="end-time" id="finalTime">0:00</div>
             <div class="end-saying" id="endSaying"></div>
             <button class="play-btn" onclick="game.resetGame()">Play Again</button>
@@ -1059,6 +1060,16 @@
                 const s = this.elapsedTime % 60;
                 const finalTimeStr = `${m}:${s < 10 ? '0' + s : s}`;
 
+                const levelNames = {
+                    1: 'Sum/Product (±10)',
+                    2: 'Sum/Product (±15)',
+                    3: 'Find Integers (±10)',
+                    4: 'Find Integers (±15)',
+                    5: 'Random Mix (±10)',
+                    6: 'Random Mix (±15)'
+                };
+
+                document.getElementById('endLevel').textContent = levelNames[this.level];
                 document.getElementById('finalTime').textContent = finalTimeStr;
                 document.getElementById('endSaying').textContent = this.getTimeSaying(this.elapsedTime);
 
